@@ -13,6 +13,7 @@ __version__ = '0.2.1'
 import math
 
 from PIL import Image
+import numpy as np
 
 
 class cached_property(object):
@@ -29,26 +30,31 @@ class cached_property(object):
 
 class ColorThief(object):
     """Color thief main class."""
-    def __init__(self, file):
-        """Create one color thief for one image.
+    def __init__(self, image):
+      if isinstance(image, np.ndarray):
+          # if input is ndarray
+          self.image = image
+      elif isinstance(image, str):
+          # if input is file path
+          self.image = np.array(Image.open(image))
+      elif isinstance(image, Image.Image):
+          # if input is Image.image
+          self.image = np.array(image)
+      else:
+          raise ValueError("Unsupported image type. Please provide a NumPy array, PIL Image, or file path.")
 
-        :param file: A filename (string) or a file object. The file object
-                     must implement `read()`, `seek()`, and `tell()` methods,
-                     and be opened in binary mode.
-        """
-        self.image = Image.open(file)
-
-    def get_color(self, quality=10):
+    def get_color(self, quality=10, color_num=3):
         """Get the dominant color.
 
         :param quality: quality settings, 1 is the highest quality, the bigger
                         the number, the faster a color will be returned but
                         the greater the likelihood that it will not be the
                         visually most dominant color
+        :param color_num: number of color palatte returned, must smaller than 5
         :return tuple: (r, g, b)
         """
         palette = self.get_palette(5, quality)
-        return palette[0]
+        return palette[:color_num]
 
     def get_palette(self, color_count=10, quality=10):
         """Build a color palette.  We are using the median cut algorithm to

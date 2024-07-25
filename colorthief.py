@@ -33,13 +33,13 @@ class ColorThief(object):
     def __init__(self, image):
       if isinstance(image, np.ndarray):
           # if input is ndarray
-          self.image = image
+          self.image = Image.fromarray(image)
       elif isinstance(image, str):
           # if input is file path
-          self.image = np.array(Image.open(image))
+          self.image = Image.open(image)
       elif isinstance(image, Image.Image):
           # if input is Image.image
-          self.image = np.array(image)
+          self.image = image
       else:
           raise ValueError("Unsupported image type. Please provide a NumPy array, PIL Image, or file path.")
 

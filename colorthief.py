@@ -43,7 +43,7 @@ class ColorThief(object):
       else:
           raise ValueError("Unsupported image type. Please provide a NumPy array, PIL Image, or file path.")
 
-    def get_color(self, quality=10, color_num=3):
+    def get_color(self, quality=10, grid_size = (1, 1), color_num=3):
         """Get the dominant color.
 
         :param quality: quality settings, 1 is the highest quality, the bigger
@@ -53,8 +53,8 @@ class ColorThief(object):
         :param color_num: number of color palatte returned, must smaller than 5
         :return tuple: (r, g, b)
         """
-        palette = self.get_palette(5, quality)
-        return palette[:color_num]
+        cell_palettes = self.get_palette(5, quality, grid_size)
+        return {k: v[:3] for k, v in cell_palettes.items()}
 def get_palette(self, color_count=10, quality=10, grid_size=(1, 1)):
   """Build color palettes for grid cells.
 

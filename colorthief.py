@@ -55,52 +55,52 @@ class ColorThief(object):
         """
         cell_palettes = self.get_palette(5, quality, grid_size)
         return {k: v[:3] for k, v in cell_palettes.items()}
-def get_palette(self, color_count=10, quality=10, grid_size=(1, 1)):
-  """Build color palettes for grid cells.
-
-  :param color_count: the size of each palette, max number of colors
-  :param quality: quality settings, 1 is the highest quality, the bigger
-                  the number, the faster the palette generation, but the
-                  greater the likelihood that colors will be missed.
-  :param grid_size: tuple (rows, cols) specifying the grid size
-  :return dict: a dictionary where keys are cell coordinates (row, col) and
-                values are lists of tuples in the form (r, g, b)
-  :raises ValueError: if grid size does not evenly divide the image dimensions
-  """
-  image = self.image.convert('RGBA')
-  width, height = image.size
-  pixels = image.getdata()
-  pixel_count = width * height
-
-  rows, cols = grid_size
-
-  # Check if grid size evenly divides image dimensions
-  if width % cols != 0 or height % rows != 0:
-      raise ValueError(f"Grid size {grid_size} does not evenly divide image dimensions {width}x{height}")
-
-  cell_width = width // cols
-  cell_height = height // rows
-  
-  # Dictionary to store valid pixels for each cell
-  cell_pixels = {(row, col): [] for row in range(rows) for col in range(cols)}
-  
-  for i, pixel in enumerate(pixels):
-      x = (i % width) // cell_width
-      y = (i // width) // cell_height
+    def get_palette(self, color_count=10, quality=10, grid_size=(1, 1)):
+      """Build color palettes for grid cells.
+    
+      :param color_count: the size of each palette, max number of colors
+      :param quality: quality settings, 1 is the highest quality, the bigger
+                      the number, the faster the palette generation, but the
+                      greater the likelihood that colors will be missed.
+      :param grid_size: tuple (rows, cols) specifying the grid size
+      :return dict: a dictionary where keys are cell coordinates (row, col) and
+                    values are lists of tuples in the form (r, g, b)
+      :raises ValueError: if grid size does not evenly divide the image dimensions
+      """
+      image = self.image.convert('RGBA')
+      width, height = image.size
+      pixels = image.getdata()
+      pixel_count = width * height
+    
+      rows, cols = grid_size
+    
+      # Check if grid size evenly divides image dimensions
+      if width % cols != 0 or height % rows != 0:
+          raise ValueError(f"Grid size {grid_size} does not evenly divide image dimensions {width}x{height}")
+    
+      cell_width = width // cols
+      cell_height = height // rows
       
-      r, g, b, a = pixel
-      # If pixel is mostly opaque and not white
-      if a >= 125 and not (r > 250 and g > 250 and b > 250):
-          cell_pixels[(y, x)].append((r, g, b))
-  
-  # Dictionary to store palettes for each cell
-  cell_palettes = {}
-  
-  for (row, col), valid_pixels in cell_pixels.items():
-      cmap = MMCQ.quantize(valid_pixels, color_count)
-      cell_palettes[(row, col)] = cmap.palette
-  
-  return cell_palettes
+      # Dictionary to store valid pixels for each cell
+      cell_pixels = {(row, col): [] for row in range(rows) for col in range(cols)}
+      
+      for i, pixel in enumerate(pixels):
+          x = (i % width) // cell_width
+          y = (i // width) // cell_height
+          
+          r, g, b, a = pixel
+          # If pixel is mostly opaque and not white
+          if a >= 125 and not (r > 250 and g > 250 and b > 250):
+              cell_pixels[(y, x)].append((r, g, b))
+      
+      # Dictionary to store palettes for each cell
+      cell_palettes = {}
+      
+      for (row, col), valid_pixels in cell_pixels.items():
+          cmap = MMCQ.quantize(valid_pixels, color_count)
+          cell_palettes[(row, col)] = cmap.palette
+      
+      return cell_palettes
 
 
 class MMCQ(object):
